@@ -1,0 +1,217 @@
+<<!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>我的备忘录</title>
+        <style>
+            button {
+                cursor: pointer;
+            }
+            
+            input {
+                outline: none;
+                background-color: rgb(255, 254, 253);
+                border: none;
+                border-radius: 3px;
+                width: 250px;
+                height: 30px;
+                margin: 15px;
+            }
+            
+            input::-webkit-input-placeholder {
+                color: rgb(19, 19, 19);
+            }
+            /* 解决li前面的点删除后还占空间的问题 */
+            
+            ul {
+                padding: 0;
+                margin: 0;
+            }
+            
+            ul>li {
+                list-style: none;
+            }
+            
+            .border {
+                width: 500px;
+                background-color: rgb(185, 52, 92);
+                border-radius: 20px;
+                margin: auto;
+                padding-bottom: 20px;
+            }
+            
+            .border .title {
+                font-size: 24px;
+                color: rgb(223, 227, 230);
+                line-height: 50px;
+                text-align: center;
+            }
+            
+            .form {
+                width: 80%;
+                margin: 15px auto;
+            }
+            
+            .form #add {
+                width: 100px;
+                height: 30px;
+                border-radius: 5px;
+                border: 0;
+                font-weight: 600;
+                font-size: 16px;
+                color: rgb(19, 18, 18);
+                letter-spacing: 6px;
+            }
+            /* 每一条li，代表每一条事件 */
+            
+            .item {
+                display: flex;
+                justify-content: space-between;
+                font-size: 20px;
+            }
+            
+            .item .info {
+                margin-left: 10px;
+            }
+            
+            .list .item .edit,
+            .fin,
+            .del {
+                width: 50px;
+                height: 30px;
+                border: 0;
+                border-radius: 5px;
+                color: rgb(241, 239, 239);
+            }
+            
+            .edit {
+                background-color: #337ab7;
+            }
+            
+            .fin {
+                background-color: #20c248;
+            }
+            
+            .del {
+                background-color: #d9534f;
+            }
+            
+            .btn {
+                display: inline-block;
+                width: 180px;
+                margin-right: 0;
+            }
+            /* 点击完成按钮后所添加的新类名finished */
+            
+            .finished {
+                color: rgb(112, 110, 110);
+                background-color: rgb(228, 13, 13);
+                border-radius: 3px
+            }
+            
+            .finished>.info {
+                /* 为文字添加删除线 */
+            }
+            
+            .line-through {
+                text-decoration: line-through
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- 备忘录外层边框 -->
+        <div class="border">
+            <!-- 标题 -->
+            <div class="title">My To Do List</div>
+            <hr>
+            <!-- 输入框和按钮 -->
+            <div class="form">
+                <input type="text" name="text" placeholder="记录一下">
+                <button id="add">Add</button>
+            </div>
+
+            <!-- 备忘录事件列表 -->
+            <div style="width: 94%;margin: auto;border-radius: 3px;;background-color: rgb(153, 166, 166);">
+                <ul class="list">
+                    <li class="item">
+                        <!-- 事件区域 -->
+
+
+
+                    </li>
+
+                </ul>
+
+            </div>
+    </body>
+
+    <script>
+        var input = document.querySelector('.form input'); //获取事件输入框
+        var addBtn = document.querySelector('#add'); //获取添加按钮
+        var list = document.querySelector('.list'); //获取事件列表ul
+        list.onclick = function() {
+                alert(加油)
+            }
+            //点击添加按钮
+        addBtn.addEventListener('click', function() { //使用监听器addEventListener
+            //使用DOM添加insertAdjacentHTML，第一个参数:添加的位置；第二个参数:添加的内容
+            //每次添加的li均添加到ul内的第一个li之前（afterbegin）
+            list.insertAdjacentHTML('afterbegin', `
+    <li class="item">
+          <!-- 事件区域 -->
+          <span class="info">${input.value}</span>
+          <!-- 按钮区域 -->
+          <div class="btn">
+           
+            <button class="del">×</button>
+          </div>
+        </li>
+    `);
+
+            //由于之前设置点击添加按钮后新元素item会被添加到插入元素内部的第一个子节点之前
+            //所以我们应该对list的第一个子元素节点进行操作，否则新增事件无法被删除、修改和完成
+            //删除
+            list.firstElementChild.querySelector('.del').addEventListener('click', function() {
+                var item = this.parentNode.parentNode
+                item.remove()
+            })
+
+
+            //修改
+            list.firstElementChild.querySelector('list').addEventListener('click', function() {
+                var item = this.parentNode.parentNode
+                item.querySelector('.info').innerText = prompt('请修改你的事件：')
+            })
+        })
+
+        var delBtns = document.querySelectorAll('.del'); //获取删除按钮
+
+
+        //遍历，有几个删除按钮则相当于有几个事件（li）
+        for (var idx = 0; idx < delBtns.length; idx++) {
+            //点击删除按钮
+            delBtns[idx].addEventListener('click', function() {
+                var item = this.parentNode.parentNode //删除按钮父级的父级，即类名为item的li(该按钮所在的行)，一个li即一个事件行
+                item.remove(); //点击删除按钮后删除该条li
+            })
+
+            //点击完成按钮
+            finBtns[idx].addEventListener('click', function() {
+                var item = this.parentNode.parentNode; //获取该条事件行
+                //classList属性可以返回一个元素类属性集合
+                item.classList.add('finished'); //点击完成按钮后为该行添加新类名finished，以实现新样式
+            })
+
+            //点击编辑按钮
+            editBtns[idx].addEventListener('click', function() {
+                var item = this.parentNode.parentNode; //获取该条事件行
+                item.querySelector('.info').innerText = prompt('请修改你的事件：'); //点击编辑后将内容插入类名为info的span并弹出系统提示框
+            })
+        }
+    </script>
+
+    </html>
